@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""네이버 '복재성' 검색 결과 순위 체커"""
+"""네이버 '복재성' 검색 결과 순위 체커 + 변화 시 이메일 알림"""
 
 import requests
 from bs4 import BeautifulSoup
@@ -7,8 +7,12 @@ import json
 import csv
 import os
 import time
+import smtplib
 import logging
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from datetime import datetime, timezone, timedelta
+from glob import glob
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -17,6 +21,7 @@ QUERY = "복재성"
 KST = timezone(timedelta(hours=9))
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "results")
 HISTORY_CSV = os.path.join(RESULTS_DIR, "history.csv")
+NOTIFY_EMAIL = "0@thesaveworld.org"
 
 HEADERS = {
     "User-Agent": (
@@ -36,6 +41,10 @@ HEADERS = {
 }
 
 
+# ──────────────────────────────────────────────
+# 네트워크
+# ──────────────────────────────────────────────
+
 def fetch_page(session: requests.Session, url: str, params: dict) -> str:
     for attempt in range(3):
         try:
@@ -48,6 +57,10 @@ def fetch_page(session: requests.Session, url: str, params: dict) -> str:
                 time.sleep(3 * (attempt + 1))
     raise RuntimeError("모든 재시도 실패")
 
+
+# ──────────────────────────────────────────────
+# 파싱
+# ──────────────────────────────────────────────
 
 def determine_type(url: str, classes: str) -> str:
     url_lower = url.lower()
@@ -73,8 +86,6 @@ def parse_integrated(html: str) -> list[dict]:
 
     main = soup.find(id="main_pack") or soup.body or soup
 
-    # 각 섹션(블로그, 뉴스, 카페 등)의 개별 항목 추출
-    # Naver의 현재 구조에 맞는 다중 셀렉터
     item_selectors = [
         ".lst_total > li",
         ".api_subject_bx .bx",
@@ -105,13 +116,11 @@ def parse_integrated(html: str) -> list[dict]:
         if not items:
             continue
         for item in items:
-            # 제목 링크 탐색
             link = None
             for ts in title_selectors:
                 link = item.select_one(ts)
                 if link:
                     break
-            # 폴백: 충분히 긴 텍스트를 가진 첫 번째 a 태그
             if not link:
                 for a in item.select("a"):
                     text = a.get_text(strip=True)
@@ -142,16 +151,14 @@ def parse_integrated(html: str) -> list[dict]:
             )
             snippet = snippet_el.get_text(strip=True)[:300] if snippet_el else ""
 
-            results.append(
-                {
-                    "rank": rank,
-                    "type": determine_type(url, classes),
-                    "title": title,
-                    "url": url,
-                    "source": source,
-                    "snippet": snippet,
-                }
-            )
+            results.append({
+                "rank": rank,
+                "type": determine_type(url, classes),
+                "title": title,
+                "url": url,
+                "source": source,
+                "snippet": snippet,
+            })
             rank += 1
 
     return results
@@ -182,20 +189,22 @@ def parse_blog_search(html: str) -> list[dict]:
         date_el = item.select_one(".sub_txt.sub_date, .date")
         date_str = date_el.get_text(strip=True) if date_el else ""
 
-        results.append(
-            {
-                "rank": rank,
-                "type": "블로그",
-                "title": title,
-                "url": url,
-                "source": author,
-                "snippet": snippet,
-                "date": date_str,
-            }
-        )
+        results.append({
+            "rank": rank,
+            "type": "블로그",
+            "title": title,
+            "url": url,
+            "source": author,
+            "snippet": snippet,
+            "date": date_str,
+        })
         rank += 1
     return results
 
+
+# ──────────────────────────────────────────────
+# 저장
+# ──────────────────────────────────────────────
 
 def save_results(results: list[dict], timestamp: datetime) -> str:
     os.makedirs(RESULTS_DIR, exist_ok=True)
@@ -236,6 +245,198 @@ def append_to_history(results: list[dict], timestamp: datetime) -> None:
             writer.writerow(row)
 
 
+# ──────────────────────────────────────────────
+# 순위 변화 감지
+# ──────────────────────────────────────────────
+
+def load_previous_results() -> list[dict] | None:
+    """results/ 폴더에서 가장 최근 JSON 파일 로드"""
+    files = sorted(glob(os.path.join(RESULTS_DIR, "????-??-??_?????.json")))
+    # 현재 실행 파일은 제외 (아직 저장 전이므로 마지막 이전 파일)
+    if len(files) < 1:
+        return None
+    # 마지막 파일 읽기
+    path = files[-1]
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        log.info("이전 결과 로드: %s (%d건)", path, data.get("total", 0))
+        return data.get("results", [])
+    except Exception as e:
+        log.warning("이전 결과 로드 실패: %s", e)
+        return None
+
+
+def detect_changes(prev: list[dict], curr: list[dict]) -> dict:
+    """
+    이전 결과와 현재 결과를 비교해 변화 목록 반환.
+    URL을 기준으로 식별.
+    """
+    prev_by_url = {r["url"]: r for r in prev}
+    curr_by_url = {r["url"]: r for r in curr}
+
+    new_items = []       # 새로 등장
+    removed_items = []   # 사라짐
+    rank_changes = []    # 순위 변동
+
+    for url, cr in curr_by_url.items():
+        if url not in prev_by_url:
+            new_items.append(cr)
+        else:
+            pr = prev_by_url[url]
+            diff = pr["rank"] - cr["rank"]   # 양수 = 상승
+            if diff != 0:
+                rank_changes.append({
+                    **cr,
+                    "prev_rank": pr["rank"],
+                    "rank_diff": diff,
+                })
+
+    for url, pr in prev_by_url.items():
+        if url not in curr_by_url:
+            removed_items.append(pr)
+
+    return {
+        "new": new_items,
+        "removed": removed_items,
+        "rank_changes": rank_changes,
+        "has_changes": bool(new_items or removed_items or rank_changes),
+    }
+
+
+# ──────────────────────────────────────────────
+# 이메일
+# ──────────────────────────────────────────────
+
+def build_email_html(changes: dict, curr: list[dict], timestamp: datetime) -> str:
+    ts = timestamp.strftime("%Y-%m-%d %H:%M KST")
+
+    def arrow(diff: int) -> str:
+        if diff > 0:
+            return f'<span style="color:#e53935">▲{diff}</span>'
+        return f'<span style="color:#1e88e5">▼{abs(diff)}</span>'
+
+    sections = []
+
+    if changes["rank_changes"]:
+        rows = ""
+        for r in sorted(changes["rank_changes"], key=lambda x: x["rank"]):
+            rows += (
+                f"<tr>"
+                f"<td>{r['prev_rank']}→<b>{r['rank']}</b></td>"
+                f"<td>{arrow(r['rank_diff'])}</td>"
+                f"<td>[{r['type']}] <a href='{r['url']}'>{r['title']}</a></td>"
+                f"<td>{r.get('source','')}</td>"
+                f"</tr>"
+            )
+        sections.append(
+            f"<h3 style='color:#f57c00'>📊 순위 변동 ({len(changes['rank_changes'])}건)</h3>"
+            f"<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse;width:100%'>"
+            f"<tr style='background:#fff3e0'><th>순위</th><th>변화</th><th>제목</th><th>출처</th></tr>"
+            f"{rows}</table>"
+        )
+
+    if changes["new"]:
+        rows = ""
+        for r in changes["new"]:
+            rows += (
+                f"<tr>"
+                f"<td><b>{r['rank']}</b></td>"
+                f"<td>[{r['type']}] <a href='{r['url']}'>{r['title']}</a></td>"
+                f"<td>{r.get('source','')}</td>"
+                f"</tr>"
+            )
+        sections.append(
+            f"<h3 style='color:#2e7d32'>🆕 신규 등장 ({len(changes['new'])}건)</h3>"
+            f"<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse;width:100%'>"
+            f"<tr style='background:#e8f5e9'><th>순위</th><th>제목</th><th>출처</th></tr>"
+            f"{rows}</table>"
+        )
+
+    if changes["removed"]:
+        rows = ""
+        for r in changes["removed"]:
+            rows += (
+                f"<tr>"
+                f"<td><b>{r['rank']}</b></td>"
+                f"<td>[{r['type']}] {r['title']}</td>"
+                f"<td>{r.get('source','')}</td>"
+                f"</tr>"
+            )
+        sections.append(
+            f"<h3 style='color:#c62828'>❌ 순위 이탈 ({len(changes['removed'])}건)</h3>"
+            f"<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse;width:100%'>"
+            f"<tr style='background:#ffebee'><th>이전순위</th><th>제목</th><th>출처</th></tr>"
+            f"{rows}</table>"
+        )
+
+    # 현재 전체 순위 요약 (상위 15위)
+    top_rows = ""
+    for r in curr[:15]:
+        top_rows += (
+            f"<tr>"
+            f"<td align='center'>{r['rank']}</td>"
+            f"<td>[{r['type']}] <a href='{r['url']}'>{r['title']}</a></td>"
+            f"<td>{r.get('source','')}</td>"
+            f"</tr>"
+        )
+    sections.append(
+        f"<h3 style='color:#37474f'>📋 현재 전체 순위 (상위 15위)</h3>"
+        f"<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse;width:100%'>"
+        f"<tr style='background:#eceff1'><th>순위</th><th>제목</th><th>출처</th></tr>"
+        f"{top_rows}</table>"
+    )
+
+    body = "\n".join(sections)
+    return f"""
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8"></head>
+<body style="font-family:Arial,sans-serif;max-width:900px;margin:auto;padding:20px">
+  <h2 style="background:#1565c0;color:white;padding:12px 16px;border-radius:6px">
+    네이버 '복재성' 검색 순위 변화 알림
+  </h2>
+  <p style="color:#555">체크 시각: <b>{ts}</b> &nbsp;|&nbsp; 총 {len(curr)}건 수집</p>
+  {body}
+  <hr>
+  <p style="color:#999;font-size:12px">자동 발송 · 네이버 순위 체커</p>
+</body>
+</html>
+"""
+
+
+def send_email(subject: str, html_body: str) -> None:
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+    sender = os.environ.get("EMAIL_SENDER", "")
+    password = os.environ.get("EMAIL_PASSWORD", "")
+
+    if not sender or not password:
+        log.warning("EMAIL_SENDER / EMAIL_PASSWORD 환경변수 미설정 → 이메일 건너뜀")
+        return
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = sender
+    msg["To"] = NOTIFY_EMAIL
+    msg.attach(MIMEText(html_body, "html", "utf-8"))
+
+    try:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.ehlo()
+            server.starttls()
+            server.login(sender, password)
+            server.sendmail(sender, [NOTIFY_EMAIL], msg.as_string())
+        log.info("이메일 발송 완료 → %s", NOTIFY_EMAIL)
+    except Exception as e:
+        log.error("이메일 발송 실패: %s", e)
+        raise
+
+
+# ──────────────────────────────────────────────
+# 메인
+# ──────────────────────────────────────────────
+
 def run():
     now = datetime.now(KST)
     log.info("검색어: '%s' | 시각: %s", QUERY, now.strftime("%Y-%m-%d %H:%M KST"))
@@ -251,6 +452,7 @@ def run():
 
     # 2단계: 통합검색
     integrated_results = []
+    html = ""
     try:
         log.info("통합검색 크롤링 중...")
         html = fetch_page(
@@ -265,7 +467,7 @@ def run():
 
     time.sleep(2)
 
-    # 3단계: 블로그 검색 (통합검색에서 충분히 못 가져온 경우 보완)
+    # 3단계: 블로그 검색 (보완용)
     blog_results = []
     try:
         log.info("블로그 검색 크롤링 중...")
@@ -279,27 +481,47 @@ def run():
     except Exception as e:
         log.error("블로그 검색 실패: %s", e)
 
-    # 결과 병합 (통합 우선, 블로그로 보완)
-    if integrated_results:
-        final_results = integrated_results
-    else:
-        final_results = blog_results
+    final_results = integrated_results or blog_results
 
     if not final_results:
         log.warning("수집된 결과가 없습니다. HTML 구조 확인 필요.")
-        # 디버그용 HTML 저장
         debug_path = os.path.join(RESULTS_DIR, now.strftime("%Y-%m-%d_%H00") + "_debug.html")
         try:
             os.makedirs(RESULTS_DIR, exist_ok=True)
             with open(debug_path, "w", encoding="utf-8") as f:
-                f.write(html if 'html' in dir() else "no html")
+                f.write(html or "no html")
             log.info("디버그 HTML 저장: %s", debug_path)
         except Exception:
             pass
         return
 
+    # 4단계: 이전 결과 로드 → 변화 감지
+    prev_results = load_previous_results()
+
+    # 5단계: 현재 결과 저장
     save_results(final_results, now)
     append_to_history(final_results, now)
+
+    # 6단계: 변화 분석 및 이메일 발송
+    if prev_results is None:
+        log.info("이전 결과 없음 (첫 실행) → 이메일 건너뜀")
+    else:
+        changes = detect_changes(prev_results, final_results)
+        if changes["has_changes"]:
+            n_chg = len(changes["rank_changes"])
+            n_new = len(changes["new"])
+            n_del = len(changes["removed"])
+            subject = (
+                f"[복재성 순위변화] "
+                f"{'순위변동 ' + str(n_chg) + '건 ' if n_chg else ''}"
+                f"{'신규 ' + str(n_new) + '건 ' if n_new else ''}"
+                f"{'이탈 ' + str(n_del) + '건' if n_del else ''}"
+                f"| {now.strftime('%m/%d %H시')}"
+            ).strip()
+            html_body = build_email_html(changes, final_results, now)
+            send_email(subject, html_body)
+        else:
+            log.info("순위 변화 없음 → 이메일 발송 안 함")
 
     # 콘솔 출력
     print(f"\n{'='*60}")
