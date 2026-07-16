@@ -24,6 +24,13 @@ final class PhotoLibraryManager: NSObject, ObservableObject {
     /// 삭제 예약된 사진들 (아직 실제로 지워지지 않음)
     @Published private(set) var pendingDeletions: [PHAsset] = []
 
+    /// 되돌리기(undo)를 위한 동작 기록
+    enum Action { case skip, delete }
+    private var history: [(index: Int, action: Action)] = []
+
+    /// 되돌릴 수 있는 동작이 있는지
+    @Published private(set) var canUndo: Bool = false
+
     /// 현재 사진의 표시용 이미지
     @Published var currentImage: UIImage?
 
@@ -103,6 +110,8 @@ final class PhotoLibraryManager: NSObject, ObservableObject {
         assets = fetched
         currentIndex = 0
         pendingDeletions.removeAll()
+        history.removeAll()
+        canUndo = false
         isFinished = fetched.isEmpty
         loadCurrentImage()
     }
@@ -146,16 +155,36 @@ final class PhotoLibraryManager: NSObject, ObservableObject {
 
     /// "안하기" — 현재 사진을 그대로 두고 다음으로 넘어간다.
     func skip() {
+        guard currentAsset != nil else { return }
+        history.append((index: currentIndex, action: .skip))
+        canUndo = true
         advance()
     }
 
     /// "삭제하기" — 현재 사진을 삭제 목록에 넣고 다음으로 넘어간다.
     func markForDeletion() {
-        if let asset = currentAsset,
-           !pendingDeletions.contains(where: { $0.localIdentifier == asset.localIdentifier }) {
+        guard let asset = currentAsset else { return }
+        if !pendingDeletions.contains(where: { $0.localIdentifier == asset.localIdentifier }) {
             pendingDeletions.append(asset)
         }
+        history.append((index: currentIndex, action: .delete))
+        canUndo = true
         advance()
+    }
+
+    /// "되돌리기" — 마지막 동작(안하기/삭제하기)을 취소하고 이전 사진으로 돌아간다.
+    func undo() {
+        guard let last = history.popLast() else { return }
+
+        if last.action == .delete, assets.indices.contains(last.index) {
+            let asset = assets[last.index]
+            pendingDeletions.removeAll { $0.localIdentifier == asset.localIdentifier }
+        }
+
+        currentIndex = last.index
+        isFinished = false
+        canUndo = !history.isEmpty
+        loadCurrentImage()
     }
 
     private func advance() {

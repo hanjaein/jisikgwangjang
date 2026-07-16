@@ -36,9 +36,16 @@ struct ContentView: View {
 private struct SwipeView: View {
     @ObservedObject var manager: PhotoLibraryManager
 
+    /// 드래그로 카드가 이동한 거리
+    @State private var dragOffset: CGSize = .zero
+    /// 카드가 화면 밖으로 날아가는 애니메이션용 오프셋
+    @State private var flyAwayX: CGFloat = 0
+
+    private let swipeThreshold: CGFloat = 110
+
     var body: some View {
         VStack(spacing: 0) {
-            // 진행 상황
+            // 진행 상황 + 되돌리기
             HStack {
                 Text("\(manager.currentIndex + 1) / \(manager.totalCount)")
                     .font(.subheadline.weight(.semibold))
@@ -49,19 +56,32 @@ private struct SwipeView: View {
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.red)
                 }
+                Button {
+                    manager.undo()
+                } label: {
+                    Image(systemName: "arrow.uturn.backward.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(manager.canUndo ? .white : .white.opacity(0.25))
+                }
+                .disabled(!manager.canUndo)
+                .padding(.leading, 12)
             }
             .padding(.horizontal, 20)
             .padding(.top, 8)
 
-            // 사진
+            // 사진 카드 (드래그해서 넘기기)
             ZStack {
                 if let image = manager.currentImage {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .overlay(alignment: .topLeading) { swipeLabel }
+                        .overlay(alignment: .topTrailing) { skipLabel }
+                        .offset(x: dragOffset.width + flyAwayX, y: dragOffset.height * 0.2)
+                        .rotationEffect(.degrees(Double(dragOffset.width + flyAwayX) / 20))
                         .id(manager.currentIndex)
-                        .transition(.opacity)
+                        .gesture(dragGesture)
                 } else {
                     ProgressView()
                         .tint(.white)
@@ -69,7 +89,13 @@ private struct SwipeView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(.vertical, 16)
-            .animation(.easeInOut(duration: 0.15), value: manager.currentIndex)
+            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: dragOffset)
+
+            // 안내 문구
+            Text("← 왼쪽으로 밀면 삭제  ·  오른쪽으로 밀면 안하기 →")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.5))
+                .padding(.bottom, 8)
 
             // 하단 버튼: 안하기 / 삭제하기
             HStack(spacing: 16) {
@@ -79,7 +105,7 @@ private struct SwipeView: View {
                     tint: .white,
                     background: Color.white.opacity(0.14)
                 ) {
-                    manager.skip()
+                    performSkip()
                 }
 
                 ActionButton(
@@ -88,11 +114,77 @@ private struct SwipeView: View {
                     tint: .white,
                     background: Color.red
                 ) {
-                    manager.markForDeletion()
+                    performDelete()
                 }
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 12)
+        }
+    }
+
+    // MARK: - 스와이프 라벨
+
+    private var swipeLabel: some View {
+        Text("삭제")
+            .font(.title.bold())
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16).padding(.vertical, 8)
+            .background(Color.red.opacity(0.9))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .rotationEffect(.degrees(-12))
+            .padding(24)
+            .opacity(dragOffset.width < 0 ? Double(min(-dragOffset.width / swipeThreshold, 1)) : 0)
+    }
+
+    private var skipLabel: some View {
+        Text("안하기")
+            .font(.title.bold())
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16).padding(.vertical, 8)
+            .background(Color.blue.opacity(0.9))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .rotationEffect(.degrees(12))
+            .padding(24)
+            .opacity(dragOffset.width > 0 ? Double(min(dragOffset.width / swipeThreshold, 1)) : 0)
+    }
+
+    // MARK: - 제스처 / 동작
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                dragOffset = value.translation
+            }
+            .onEnded { value in
+                if value.translation.width < -swipeThreshold {
+                    performDelete()
+                } else if value.translation.width > swipeThreshold {
+                    performSkip()
+                } else {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        dragOffset = .zero
+                    }
+                }
+            }
+    }
+
+    private func performSkip() {
+        flyAway(to: 600) { manager.skip() }
+    }
+
+    private func performDelete() {
+        flyAway(to: -600) { manager.markForDeletion() }
+    }
+
+    /// 카드를 화면 밖으로 날린 뒤 다음 사진으로 전환한다.
+    private func flyAway(to x: CGFloat, action: @escaping () -> Void) {
+        withAnimation(.easeIn(duration: 0.2)) {
+            flyAwayX = x
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            action()
+            dragOffset = .zero
+            flyAwayX = 0
         }
     }
 }
@@ -177,6 +269,21 @@ private struct FinishedView: View {
                     .foregroundStyle(.white)
                 Text("모든 사진을 정리했습니다.")
                     .foregroundStyle(.white.opacity(0.8))
+            }
+
+            if manager.canUndo && !didDelete {
+                Button {
+                    manager.undo()
+                } label: {
+                    Label("되돌리기", systemImage: "arrow.uturn.backward")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Color.white.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                }
+                .padding(.horizontal, 32)
             }
 
             Button {
