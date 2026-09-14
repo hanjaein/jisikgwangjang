@@ -1,0 +1,52 @@
+name: 네이버 키워드 순위 추적
+
+on:
+  schedule:
+    # 매시 정각(UTC 기준)에 실행 -> 한국시간(KST, UTC+9) 기준으로도 매시간 실행됨
+    - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      keyword:
+        description: "추적할 검색 키워드 (기본값: 복재성)"
+        required: false
+        default: "복재성"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: naver-ranking-tracker
+  cancel-in-progress: false
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    env:
+      NAVER_KEYWORD: ${{ inputs.keyword || '복재성' }}
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 의존성 설치
+        run: pip install -r requirements.txt
+
+      - name: 순위 추적 실행
+        run: python scripts/track_naver_ranking.py
+
+      - name: 결과 커밋 및 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "변경 사항이 없어 커밋하지 않습니다."
+          else
+            git commit -m "chore: ${NAVER_KEYWORD} 네이버 검색 순위 기록 $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
