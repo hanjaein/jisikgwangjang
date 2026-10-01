@@ -17,6 +17,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+import re
 import sys
 import time
 from dataclasses import dataclass, asdict
@@ -83,7 +84,25 @@ EXCLUDE_HREF_SUBSTRINGS = [
 EXCLUDE_TEXTS = {
     "", "더보기", "더 보기", "이전", "다음", "신고", "펼치기", "접기",
     "홈", "블로그", "카페", "뉴스", "이미지", "지식iN", "동영상", "쇼핑",
+    "새 창 열림", "새창 열림", "새 창에서 열림",
 }
+
+# 글 제목이 아니라 "새 창 열림" 같은 접근성 라벨만 들어 있는 프로필/섹션 링크(블로그/카페 홈 등)를
+# 걸러내기 위해, URL 안에 게시글 식별용 숫자 ID(logNo, 기사번호, docId 등)가 있는지 확인한다.
+# 네이버의 글 식별자는 보통 5자리 이상의 연속된 숫자이므로, 이를 "진짜 게시물" 판별 기준으로 쓴다.
+POST_ID_PATTERN = re.compile(r"\d{5,}")
+
+# 제목 끝에 붙는 "새 창 열림" 류의 접근성 라벨 꼬리표를 제거하기 위한 패턴.
+TRAILING_NEW_WINDOW_LABEL = re.compile(r"\s*새\s*창(?:에서)?\s*열림\s*$")
+
+
+def has_post_id(url: str) -> bool:
+    """글(게시물) 고유 식별자가 URL에 없으면 프로필/홈 링크로 간주한다."""
+    return bool(POST_ID_PATTERN.search(url))
+
+
+def clean_title(text: str) -> str:
+    return TRAILING_NEW_WINDOW_LABEL.sub("", text).strip()
 
 
 @dataclass
@@ -142,14 +161,14 @@ def should_exclude(href: str, text: str) -> bool:
 
 def extract_title(anchor) -> str:
     text = anchor.get_text(" ", strip=True)
-    if text:
-        return text
-    # 앵커 자체에 텍스트가 없으면 near 자손(strong/span 등)을 찾아본다.
-    for child in anchor.find_all(True):
-        child_text = child.get_text(" ", strip=True)
-        if child_text:
-            return child_text
-    return ""
+    if not text:
+        # 앵커 자체에 텍스트가 없으면 자손(strong/span 등)을 찾아본다.
+        for child in anchor.find_all(True):
+            child_text = child.get_text(" ", strip=True)
+            if child_text:
+                text = child_text
+                break
+    return clean_title(text)
 
 
 def parse_ranking(html: str, max_rank: int) -> list[RankedItem]:
@@ -169,6 +188,10 @@ def parse_ranking(html: str, max_rank: int) -> list[RankedItem]:
 
         content_type = classify_type(href)
         if content_type is None:
+            continue
+
+        if not has_post_id(href):
+            # 글 자체가 아니라 블로그/카페 홈, 작성자 프로필 등으로 가는 링크이므로 제외한다.
             continue
 
         # 정규화: 추적 파라미터 등을 제거해 같은 글이 중복 집계되지 않도록 한다.

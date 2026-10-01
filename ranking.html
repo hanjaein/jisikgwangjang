@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>복재성 네이버 검색 순위 트래커</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --delta-good:     #006300;
+    --status-good:    #0ca30c;
+    --status-critical:#d03b3b;
+
+    --series-1: #2a78d6; /* 블로그 */
+    --series-2: #eb6834; /* 카페 */
+    --series-3: #1baf7a; /* 뉴스 */
+    --series-4: #eda100; /* 포스트 */
+    --series-5: #e87ba4; /* 지식iN */
+    --series-6: #008300; /* 인플루언서 */
+    --series-7: #4a3aa7; /* 쇼핑 */
+    --series-8: #e34948; /* 기타 */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --delta-good:     #0ca30c;
+      --status-good:    #0ca30c;
+      --status-critical:#e66767;
+
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --series-4: #c98500;
+      --series-5: #d55181;
+      --series-6: #008300;
+      --series-7: #9085e9;
+      --series-8: #e66767;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --delta-good:     #0ca30c;
+    --status-good:    #0ca30c;
+    --status-critical:#e66767;
+
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --series-6: #008300;
+    --series-7: #9085e9;
+    --series-8: #e66767;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  a { color: var(--series-1); }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 28px 20px 80px; }
+
+  header.page { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--text-secondary); font-size: 14px; margin: 0; }
+  .backlink { font-size: 13px; color: var(--text-secondary); text-decoration: none; }
+  .theme-btn {
+    border: 1px solid var(--border); background: var(--surface-1); color: var(--text-secondary);
+    border-radius: 8px; padding: 6px 10px; font-size: 13px; cursor: pointer;
+  }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0 28px; }
+  .stat-tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .stat-tile .label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .stat-tile .value { font-size: 24px; font-weight: 600; }
+
+  section { margin-bottom: 36px; }
+  section h2 { font-size: 16px; margin: 0 0 4px; }
+  section .hint { color: var(--text-muted); font-size: 12.5px; margin: 0 0 14px; }
+
+  .panel { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+
+  .range-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .range-btns { display: flex; gap: 6px; }
+  .range-btns button, .toggle-btn {
+    border: 1px solid var(--border); background: transparent; color: var(--text-secondary);
+    border-radius: 999px; padding: 5px 12px; font-size: 12.5px; cursor: pointer;
+  }
+  .range-btns button[aria-pressed="true"] { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 10px 2px 0; font-size: 12.5px; color: var(--text-secondary); }
+  .legend .item { display: flex; align-items: center; gap: 6px; }
+  .legend .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+
+  svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+  .gridline { stroke: var(--gridline); stroke-width: 1; }
+  .baseline { stroke: var(--baseline); stroke-width: 1; }
+  .axis-label { fill: var(--text-muted); font-size: 11px; }
+  .series-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .series-dot { stroke: var(--surface-1); stroke-width: 2; }
+  .hover-crosshair { stroke: var(--baseline); stroke-width: 1; stroke-dasharray: 3 3; }
+
+  .tooltip {
+    position: absolute; pointer-events: none; background: var(--surface-1); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12.5px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12); white-space: nowrap; transform: translate(-50%, -110%);
+    opacity: 0; transition: opacity 0.1s;
+  }
+  .tooltip .t-time { color: var(--text-muted); margin-bottom: 4px; }
+  .tooltip .t-row { display: flex; align-items: center; gap: 6px; }
+  .tooltip .t-row .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .chart-wrap { position: relative; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--gridline); vertical-align: top; }
+  th { color: var(--text-muted); font-weight: 500; font-size: 12px; }
+  td.rank { font-variant-numeric: tabular-nums; color: var(--text-secondary); width: 40px; }
+  .type-badge { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .type-badge .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  td.title a { color: var(--text-primary); text-decoration: none; }
+  td.title a:hover { text-decoration: underline; }
+  .url-sub { display: block; color: var(--text-muted); font-size: 11.5px; margin-top: 2px; }
+
+  .delta-good { color: var(--delta-good); font-weight: 600; }
+  .delta-bad { color: var(--status-critical); font-weight: 600; }
+  .delta-flat { color: var(--text-muted); }
+  .badge-new { color: var(--series-1); font-weight: 600; }
+  .badge-out { color: var(--text-muted); }
+
+  .empty { color: var(--text-muted); font-size: 13.5px; padding: 20px 0; }
+  footer.page { color: var(--text-muted); font-size: 12px; margin-top: 40px; }
+  footer.page a { color: var(--text-muted); }
+
+  @media (max-width: 600px) {
+    .url-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page">
+    <div>
+      <h1>복재성 네이버 검색 순위 트래커</h1>
+      <p class="sub">네이버 통합검색 "복재성" 첫 화면 노출 순위를 1시간마다 자동 기록합니다.</p>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <a class="backlink" href="./index.html">← 지식광장</a>
+      <button class="theme-btn" id="themeToggle" type="button">다크 모드</button>
+    </div>
+  </header>
+
+  <div class="stat-row" id="statRow"></div>
+
+  <section>
+    <h2>유형별 노출 개수 추이</h2>
+    <p class="hint">매 실행마다 첫 화면(상위 30개)에 노출된 글을 유형별로 집계한 개수입니다.</p>
+    <div class="panel">
+      <div class="range-row">
+        <div class="range-btns" id="rangeBtns">
+          <button data-range="1">24시간</button>
+          <button data-range="7">7일</button>
+          <button data-range="30">30일</button>
+          <button data-range="all" aria-pressed="true">전체</button>
+        </div>
+        <button class="toggle-btn" id="tableToggle" type="button">표로 보기</button>
+      </div>
+      <div class="chart-wrap" id="chartWrap">
+        <svg class="chart" id="chartSvg" viewBox="0 0 860 300" preserveAspectRatio="none"></svg>
+        <div class="tooltip" id="tooltip"></div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div id="chartTable" style="display:none; margin-top: 14px; overflow-x:auto;"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>최신 순위</h2>
+    <p class="hint" id="latestHint"></p>
+    <div class="panel" style="overflow-x:auto;">
+      <table id="latestTable"></table>
+    </div>
+  </section>
+
+  <section>
+    <h2>직전 기록 대비 변동</h2>
+    <p class="hint" id="deltaHint"></p>
+    <div class="panel" style="overflow-x:auto;">
+      <div id="deltaBody"></div>
+    </div>
+  </section>
+
+  <footer class="page">
+    데이터 출처: <code>data/naver_ranking_history.csv</code>, <code>data/naver_ranking_latest.json</code> ·
+    <a href="https://github.com/hanjaein/jisikgwangjang" target="_blank" rel="noopener">저장소 보기</a>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var TYPE_ORDER = ["블로그", "카페", "뉴스", "포스트", "지식iN", "인플루언서", "쇼핑", "기타"];
+  var SERIES_VARS = ["--series-1","--series-2","--series-3","--series-4","--series-5","--series-6","--series-7","--series-8"];
+
+  function seriesColor(i) {
+    return getComputedStyle(document.documentElement).getPropertyValue(SERIES_VARS[i % SERIES_VARS.length]).trim();
+  }
+  function typeIndex(type) {
+    var i = TYPE_ORDER.indexOf(type);
+    return i === -1 ? TYPE_ORDER.length - 1 : i;
+  }
+  function typeLabel(type) {
+    return TYPE_ORDER.indexOf(type) === -1 ? "기타" : type;
+  }
+
+  // ---- 테마 토글 -----------------------------------------------------
+  var themeBtn = document.getElementById("themeToggle");
+  function applyTheme(mode) {
+    if (mode === "dark") { document.documentElement.setAttribute("data-theme", "dark"); themeBtn.textContent = "라이트 모드"; }
+    else { document.documentElement.setAttribute("data-theme", "light"); themeBtn.textContent = "다크 모드"; }
+  }
+  try {
+    var saved = localStorage.getItem("ranking-theme");
+    if (saved) applyTheme(saved);
+  } catch (e) {}
+  themeBtn.addEventListener("click", function () {
+    var current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    var next = current === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem("ranking-theme", next); } catch (e) {}
+    renderChart(); // 색상 변수가 바뀌므로 다시 그린다
+  });
+
+  // ---- CSV 파서 (따옴표/쉼표 포함 필드 지원) ---------------------------
+  function parseCSV(text) {
+    var rows = [];
+    var row = [];
+    var field = "";
+    var inQuotes = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; }
+          else { inQuotes = false; }
+        } else {
+          field += c;
+        }
+      } else {
+        if (c === '"') { inQuotes = true; }
+        else if (c === ',') { row.push(field); field = ""; }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ""; }
+        else if (c === '\r') { /* skip */ }
+        else { field += c; }
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    if (!rows.length) return [];
+    var header = rows[0];
+    return rows.slice(1).filter(function (r) { return r.length === header.length; }).map(function (r) {
+      var obj = {};
+      header.forEach(function (h, idx) { obj[h] = r[idx]; });
+      return obj;
+    });
+  }
+
+  function fmtTime(iso) {
+    try {
+      var d = new Date(iso);
+      return d.toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+    } catch (e) { return iso; }
+  }
+
+  // ---- 데이터 로드 -----------------------------------------------------
+  var historyRows = [];
+  var latestData = null;
+  var currentRangeDays = "all";
+
+  Promise.all([
+    fetch("data/naver_ranking_history.csv").then(function (r) { return r.ok ? r.text() : ""; }).catch(function () { return ""; }),
+    fetch("data/naver_ranking_latest.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+  ]).then(function (results) {
+    historyRows = parseCSV(results[0]).filter(function (r) { return r.rank && r.url; });
+    latestData = results[1];
+    renderStats();
+    renderLatestTable();
+    renderDeltaTable();
+    renderChart();
+  });
+
+  // ---- 상단 통계 타일 ---------------------------------------------------
+  function renderStats() {
+    var el = document.getElementById("statRow");
+    var count = latestData ? latestData.count : 0;
+    var checkedAt = latestData ? fmtTime(latestData.checked_at) : "-";
+    var distinctTimestamps = {};
+    historyRows.forEach(function (r) { distinctTimestamps[r.checked_at] = true; });
+    var runCount = Object.keys(distinctTimestamps).length;
+
+    var tiles = [
+      { label: "키워드", value: (latestData && latestData.keyword) || "복재성" },
+      { label: "현재 첫 화면 노출 글 수", value: count + "건" },
+      { label: "마지막 확인 시각", value: checkedAt },
+      { label: "누적 기록 횟수", value: runCount + "회" }
+    ];
+    el.innerHTML = tiles.map(function (t) {
+      return '<div class="stat-tile"><div class="label">' + t.label + '</div><div class="value">' + t.value + '</div></div>';
+    }).join("");
+  }
+
+  // ---- 최신 순위 테이블 --------------------------------------------------
+  function renderLatestTable() {
+    var hint = document.getElementById("latestHint");
+    var table = document.getElementById("latestTable");
+    if (!latestData || !latestData.items || !latestData.items.length) {
+      hint.textContent = "아직 기록된 데이터가 없습니다.";
+      table.innerHTML = "";
+      return;
+    }
+    hint.textContent = fmtTime(latestData.checked_at) + " 기준, 첫 화면 노출 순서 그대로입니다.";
+    var rowsHtml = latestData.items.map(function (item) {
+      var idx = typeIndex(item.type);
+      return "<tr>" +
+        '<td class="rank">' + item.rank + "</td>" +
+        '<td><span class="type-badge"><span class="dot" style="background:' + seriesColor(idx) + '"></span>' + typeLabel(item.type) + "</span></td>" +
+        '<td class="title"><a href="' + item.url + '" target="_blank" rel="noopener">' + escapeHtml(item.title || "(제목 없음)") + "</a>" +
+        '<span class="url-sub">' + item.url + "</span></td>" +
+        "</tr>";
+    }).join("");
+    table.innerHTML = "<thead><tr><th>순위</th><th>유형</th><th>제목</th></tr></thead><tbody>" + rowsHtml + "</tbody>";
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  // ---- 직전 기록 대비 변동 ------------------------------------------------
+  function renderDeltaTable() {
+    var hint = document.getElementById("deltaHint");
+    var body = document.getElementById("deltaBody");
+
+    var timestamps = Array.from(new Set(historyRows.map(function (r) { return r.checked_at; }))).sort();
+    if (timestamps.length < 2 || !latestData) {
+      hint.textContent = "비교할 이전 기록이 아직 없습니다 (2회 이상 기록되면 표시됩니다).";
+      body.innerHTML = "";
+      return;
+    }
+    var prevTs = timestamps[timestamps.length - 2];
+    var prevRows = historyRows.filter(function (r) { return r.checked_at === prevTs; });
+    var prevByUrl = {};
+    prevRows.forEach(function (r) { prevByUrl[r.url] = r; });
+
+    var currentByUrl = {};
+    latestData.items.forEach(function (item) { currentByUrl[item.url] = item; });
+
+    hint.textContent = fmtTime(prevTs) + " → " + fmtTime(latestData.checked_at) + " 비교";
+
+    var rows = [];
+    latestData.items.forEach(function (item) {
+      var prev = prevByUrl[item.url];
+      if (!prev) {
+        rows.push({ item: item, kind: "new" });
+      } else {
+        var prevRank = parseInt(prev.rank, 10);
+        var delta = prevRank - item.rank; // 양수면 순위 상승(개선)
+        rows.push({ item: item, kind: "change", delta: delta, prevRank: prevRank });
+      }
+    });
+    var droppedOut = prevRows.filter(function (r) { return !currentByUrl[r.url]; });
+
+    if (!rows.length && !droppedOut.length) {
+      body.innerHTML = '<p class="empty">변동 사항이 없습니다.</p>';
+      return;
+    }
+
+    var html = '<table><thead><tr><th>상태</th><th>순위</th><th>유형</th><th>제목</th></tr></thead><tbody>';
+    rows.forEach(function (r) {
+      var idx = typeIndex(r.item.type);
+      var statusHtml;
+      if (r.kind === "new") {
+        statusHtml = '<span class="badge-new">● 신규 진입</span>';
+      } else if (r.delta > 0) {
+        statusHtml = '<span class="delta-good">▲ ' + r.delta + "단계 상승</span>";
+      } else if (r.delta < 0) {
+        statusHtml = '<span class="delta-bad">▼ ' + Math.abs(r.delta) + "단계 하락</span>";
+      } else {
+        statusHtml = '<span class="delta-flat">— 변동 없음</span>';
+      }
+      html += "<tr>" +
+        "<td>" + statusHtml + "</td>" +
+        '<td class="rank">' + r.item.rank + (r.kind === "change" ? ' <span class="url-sub">(이전 ' + r.prevRank + ")</span>" : "") + "</td>" +
+        '<td><span class="type-badge"><span class="dot" style="background:' + seriesColor(idx) + '"></span>' + typeLabel(r.item.type) + "</span></td>" +
+        '<td class="title"><a href="' + r.item.url + '" target="_blank" rel="noopener">' + escapeHtml(r.item.title || "(제목 없음)") + "</a></td>" +
+        "</tr>";
+    });
+    droppedOut.forEach(function (r) {
+      var idx = typeIndex(r.type);
+      html += "<tr>" +
+        '<td><span class="badge-out">○ 이탈</span></td>' +
+        '<td class="rank">' + r.rank + ' <span class="url-sub">(이전)</span></td>' +
+        '<td><span class="type-badge"><span class="dot" style="background:' + seriesColor(idx) + '"></span>' + typeLabel(r.type) + "</span></td>" +
+        '<td class="title"><a href="' + r.url + '" target="_blank" rel="noopener">' + escapeHtml(r.title || "(제목 없음)") + "</a></td>" +
+        "</tr>";
+    });
+    html += "</tbody></table>";
+    body.innerHTML = html;
+  }
+
+  // ---- 유형별 노출 추이 차트 ----------------------------------------------
+  function buildSeriesData(rangeDays) {
+    var cutoff = null;
+    if (rangeDays !== "all") {
+      cutoff = Date.now() - rangeDays * 24 * 60 * 60 * 1000;
+    }
+    var byTs = {};
+    historyRows.forEach(function (r) {
+      var t = Date.parse(r.checked_at);
+      if (cutoff !== null && t < cutoff) return;
+      byTs[r.checked_at] = byTs[r.checked_at] || {};
+      var label = typeLabel(r.type);
+      byTs[r.checked_at][label] = (byTs[r.checked_at][label] || 0) + 1;
+    });
+    var timestamps = Object.keys(byTs).sort();
+    return {
+      timestamps: timestamps,
+      series: TYPE_ORDER.map(function (type) {
+        return { type: type, values: timestamps.map(function (ts) { return byTs[ts][type] || 0; }) };
+      })
+    };
+  }
+
+  var tooltipEl = document.getElementById("tooltip");
+
+  function renderChart() {
+    var data = buildSeriesData(currentRangeDays);
+    var svg = document.getElementById("chartSvg");
+    var legend = document.getElementById("legend");
+    svg.innerHTML = "";
+    legend.innerHTML = "";
+
+    if (!data.timestamps.length) {
+      svg.setAttribute("viewBox", "0 0 860 120");
+      var txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      txt.setAttribute("x", 20); txt.setAttribute("y", 60); txt.setAttribute("class", "axis-label");
+      txt.textContent = "표시할 데이터가 아직 없습니다.";
+      svg.appendChild(txt);
+      return;
+    }
+
+    var W = 860, H = 300, padL = 32, padR = 16, padT = 16, padB = 28;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+
+    var activeSeries = data.series.filter(function (s) { return s.values.some(function (v) { return v > 0; }); });
+    var maxVal = Math.max(1, Math.max.apply(null, activeSeries.map(function (s) { return Math.max.apply(null, s.values); })));
+    var yMax = Math.ceil(maxVal * 1.2);
+    var n = data.timestamps.length;
+
+    function xAt(i) { return n <= 1 ? (W - padL - padR) / 2 + padL : padL + (i / (n - 1)) * (W - padL - padR); }
+    function yAt(v) { return H - padB - (v / yMax) * (H - padT - padB); }
+
+    var ns = "http://www.w3.org/2000/svg";
+    function el(tag, attrs) {
+      var e = document.createElementNS(ns, tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      return e;
+    }
+
+    // 가로 그리드라인 (0, 중간, 최대)
+    var ticks = yMax <= 4 ? [0, yMax] : [0, Math.round(yMax / 2), yMax];
+    ticks.forEach(function (t) {
+      svg.appendChild(el("line", { x1: padL, x2: W - padR, y1: yAt(t), y2: yAt(t), class: t === 0 ? "baseline" : "gridline" }));
+      var label = el("text", { x: 4, y: yAt(t) + 4, class: "axis-label" });
+      label.textContent = t;
+      svg.appendChild(label);
+    });
+
+    // x축 라벨: 처음/가운데/마지막
+    [0, Math.floor((n - 1) / 2), n - 1].forEach(function (i, idx, arr) {
+      if (idx > 0 && arr[idx - 1] === i) return;
+      var label = el("text", { x: xAt(i), y: H - 6, class: "axis-label", "text-anchor": idx === 0 ? "start" : idx === arr.length - 1 ? "end" : "middle" });
+      label.textContent = fmtTime(data.timestamps[i]);
+      svg.appendChild(label);
+    });
+
+    activeSeries.forEach(function (s, si) {
+      var idx = typeIndex(s.type);
+      var color = seriesColor(idx);
+      var d = s.values.map(function (v, i) { return (i === 0 ? "M" : "L") + xAt(i) + "," + yAt(v); }).join(" ");
+      svg.appendChild(el("path", { d: d, class: "series-line", stroke: color }));
+      s.values.forEach(function (v, i) {
+        if (n <= 40 || i === n - 1) {
+          svg.appendChild(el("circle", { cx: xAt(i), cy: yAt(v), r: 4, fill: color, class: "series-dot" }));
+        }
+      });
+    });
+
+    // 범례 (고정 순서, 실제 등장한 유형만)
+    activeSeries.forEach(function (s) {
+      var idx = typeIndex(s.type);
+      var item = document.createElement("span");
+      item.className = "item";
+      item.innerHTML = '<span class="dot" style="background:' + seriesColor(idx) + '"></span>' + s.type;
+      legend.appendChild(item);
+    });
+
+    // 호버 크로스헤어 + 툴팁
+    var hitArea = el("rect", { x: padL, y: padT, width: Math.max(1, W - padL - padR), height: H - padT - padB, fill: "transparent" });
+    var crosshair = el("line", { class: "hover-crosshair", y1: padT, y2: H - padB, x1: -100, x2: -100 });
+    svg.appendChild(crosshair);
+    svg.appendChild(hitArea);
+
+    hitArea.addEventListener("mousemove", function (evt) {
+      var rect = svg.getBoundingClientRect();
+      var scaleX = W / rect.width;
+      var mouseX = (evt.clientX - rect.left) * scaleX;
+      var i = Math.round(((mouseX - padL) / (W - padL - padR)) * (n - 1));
+      i = Math.max(0, Math.min(n - 1, i));
+      var cx = xAt(i);
+      crosshair.setAttribute("x1", cx); crosshair.setAttribute("x2", cx);
+
+      var html = '<div class="t-time">' + fmtTime(data.timestamps[i]) + "</div>";
+      activeSeries.forEach(function (s) {
+        var idx = typeIndex(s.type);
+        html += '<div class="t-row"><span class="dot" style="background:' + seriesColor(idx) + '"></span>' + s.type + ": " + s.values[i] + "건</div>";
+      });
+      tooltipEl.innerHTML = html;
+      tooltipEl.style.opacity = "1";
+      var wrapRect = document.getElementById("chartWrap").getBoundingClientRect();
+      tooltipEl.style.left = ((evt.clientX - wrapRect.left)) + "px";
+      tooltipEl.style.top = ((evt.clientY - wrapRect.top) - 8) + "px";
+    });
+    hitArea.addEventListener("mouseleave", function () {
+      tooltipEl.style.opacity = "0";
+      crosshair.setAttribute("x1", -100); crosshair.setAttribute("x2", -100);
+    });
+
+    renderChartTable(data, activeSeries);
+  }
+
+  function renderChartTable(data, activeSeries) {
+    var container = document.getElementById("chartTable");
+    var html = '<table><thead><tr><th>시각</th>' + activeSeries.map(function (s) { return "<th>" + s.type + "</th>"; }).join("") + "</tr></thead><tbody>";
+    data.timestamps.forEach(function (ts, i) {
+      html += "<tr><td>" + fmtTime(ts) + "</td>" + activeSeries.map(function (s) { return "<td>" + s.values[i] + "</td>"; }).join("") + "</tr>";
+    });
+    html += "</tbody></table>";
+    container.innerHTML = html;
+  }
+
+  document.getElementById("rangeBtns").addEventListener("click", function (evt) {
+    var btn = evt.target.closest("button[data-range]");
+    if (!btn) return;
+    currentRangeDays = btn.dataset.range === "all" ? "all" : parseInt(btn.dataset.range, 10);
+    Array.from(document.querySelectorAll("#rangeBtns button")).forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
+    renderChart();
+  });
+
+  document.getElementById("tableToggle").addEventListener("click", function () {
+    var tableEl = document.getElementById("chartTable");
+    var chartWrap = document.getElementById("chartWrap");
+    var legend = document.getElementById("legend");
+    var showing = tableEl.style.display !== "none";
+    tableEl.style.display = showing ? "none" : "block";
+    chartWrap.style.display = showing ? "block" : "none";
+    legend.style.display = showing ? "flex" : "none";
+    this.textContent = showing ? "표로 보기" : "차트로 보기";
+  });
+})();
+</script>
+</body>
+</html>
