@@ -2,8 +2,9 @@ name: 네이버 키워드 순위 추적
 
 on:
   schedule:
-    # 매시 정각(UTC 기준)에 실행 -> 한국시간(KST, UTC+9) 기준으로도 매시간 실행됨
-    - cron: "0 * * * *"
+    # 5분마다 실행. GitHub Actions 무료 크론은 부하가 높을 때 수 분~수십 분 지연되거나
+    # 건너뛸 수 있어, 실제 실행 간격이 정확히 5분으로 보장되지는 않는다.
+    - cron: "*/5 * * * *"
   workflow_dispatch:
     inputs:
       keyword:
