@@ -9,7 +9,7 @@
 3. data/naver_ranking_latest.json 에 이번 결과를 저장한다.
 4. data/naver_ranking_history.csv 에 이번 결과를 누적 기록한다.
 
-GitHub Actions에서 1시간마다(cron) 실행되도록 설계되었다.
+GitHub Actions에서 5분마다(cron) 실행되도록 설계되었다.
 """
 
 from __future__ import annotations
