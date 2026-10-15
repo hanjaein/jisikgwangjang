@@ -1,7 +1,7 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-10-14T23:57:11+00:00",
-  "count": 13,
+  "checked_at": "2026-10-15T02:57:25+00:00",
+  "count": 12,
   "items": [
     {
       "rank": 1,
@@ -41,45 +41,39 @@
     },
     {
       "rank": 7,
+      "type": "인플루언서",
+      "title": "복재성 일본 다카야마 여행 전통 거리를 따라 만난 소도시 풍경",
+      "url": "https://in.naver.com/beauyonce/contents/internal/1006336147889824"
+    },
+    {
+      "rank": 8,
       "type": "블로그",
       "title": "복재성 수원 화성 여행 성곽길을 따라 걸으며 만난 도심 풍경",
       "url": "https://blog.naver.com/midas8873/224429638885"
     },
     {
-      "rank": 8,
+      "rank": 9,
       "type": "블로그",
       "title": "복재성 파주 출판도시 여행 책과 건축 사이에서 여유를 찾은 시간",
       "url": "https://blog.naver.com/yulia15/224435487718"
     },
     {
-      "rank": 9,
+      "rank": 10,
       "type": "블로그",
       "title": "복재성 체코 프라하 여행 구시가지와 카를교를 천천히 걸었던 하루",
       "url": "https://blog.naver.com/hicod0311/224435501435"
     },
     {
-      "rank": 10,
+      "rank": 11,
       "type": "블로그",
       "title": "이란 여행 온천 휴식과 지역 먹거리를 함께 찾는 일정, 복재성 여행정보",
       "url": "https://blog.naver.com/ibhpnzx0/224425711383"
     },
     {
-      "rank": 11,
+      "rank": 12,
       "type": "블로그",
       "title": "복재성 은 지금 저평가 종목을 어떤 기준으로 찾았을까",
       "url": "https://blog.naver.com/saker000/224429561476"
-    },
-    {
-      "rank": 12,
-      "type": "블로그",
-      "title": "복재성 을 계기로 살펴본 주식시장 흔들리는 장세 속 기회는 어디에 있을까",
-      "url": "https://blog.naver.com/josegimkorea/224429562175"
-    },
-    {
-      "rank": 13,
-      "type": "블로그",
-      "title": "복재성 검색하다 궁금해진 배당주 지금 다시 주목할 때일까",
-      "url": "https://blog.naver.com/dururui/224429560476"
     }
   ]
 }
