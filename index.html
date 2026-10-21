@@ -2,10 +2,186 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="지식광장 서비스의 사용성과 콘텐츠 품질을 높이기 위한 개선안 페이지입니다." />
+  <meta name="author" content="지식광장 운영팀" />
+  <meta property="og:title" content="지식광장 개선안" />
+  <meta property="og:description" content="지식광장 서비스의 사용성과 콘텐츠 품질을 높이기 위한 개선안" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:type" content="website" />
   <title>지식광장 개선안</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #1f6feb;
+      --color-primary-dark: #1a5fd0;
+      --color-text: #1c2530;
+      --color-muted: #5b6675;
+      --color-bg: #f5f7fb;
+      --color-surface: #ffffff;
+      --color-border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(15, 30, 60, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--color-primary), #3b8bff);
+      color: #fff;
+      padding: 64px 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 700;
+    }
+
+    header p {
+      margin: 0;
+      font-size: clamp(15px, 2.5vw, 18px);
+      opacity: 0.92;
+    }
+
+    main {
+      max-width: 880px;
+      margin: -32px auto 64px;
+      padding: 0 20px;
+    }
+
+    section {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px 28px 32px;
+      margin-bottom: 24px;
+    }
+
+    section h2 {
+      margin-top: 0;
+      font-size: 22px;
+      font-weight: 700;
+      border-left: 4px solid var(--color-primary);
+      padding-left: 12px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .card {
+      background: var(--color-bg);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      color: var(--color-primary-dark);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--color-muted);
+      font-size: 15px;
+    }
+
+    ol,
+    ul {
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--color-muted);
+      font-size: 14px;
+      padding: 24px 20px 48px;
+    }
+
+    a {
+      color: var(--color-primary);
+    }
+  </style>
 </head>
 <body>
-  <h1>지식광장 개선안 페이지</h1>
-  <p>여기에 최종 HTML 내용을 등록하세요.</p>
+  <header>
+    <h1>지식광장 개선안</h1>
+    <p>더 쉽게 찾고, 더 편하게 나누는 지식 공유 공간을 위한 제안</p>
+  </header>
+
+  <main>
+    <section aria-labelledby="overview-title">
+      <h2 id="overview-title">개요</h2>
+      <p>
+        본 문서는 지식광장 서비스의 사용성과 콘텐츠 품질을 높이기 위한 개선안을 정리한
+        페이지입니다. 이용자 의견과 운영 데이터를 바탕으로 우선순위가 높은 항목을 선별하여
+        단계별 실행 계획으로 제시합니다.
+      </p>
+    </section>
+
+    <section aria-labelledby="goals-title">
+      <h2 id="goals-title">주요 목표</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>탐색 편의성</h3>
+          <p>검색과 분류 체계를 개선해 원하는 지식을 빠르게 찾도록 합니다.</p>
+        </div>
+        <div class="card">
+          <h3>참여 활성화</h3>
+          <p>질문과 답변, 댓글 참여를 유도하는 보상 체계를 마련합니다.</p>
+        </div>
+        <div class="card">
+          <h3>콘텐츠 신뢰도</h3>
+          <p>검증 절차와 출처 표기를 강화해 정보의 정확성을 높입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="plan-title">
+      <h2 id="plan-title">단계별 실행 계획</h2>
+      <ol>
+        <li><strong>1단계 — 진단:</strong> 이용 현황을 분석하고 개선이 필요한 지점을 도출합니다.</li>
+        <li><strong>2단계 — 개선:</strong> 우선순위가 높은 기능부터 순차적으로 적용합니다.</li>
+        <li><strong>3단계 — 검증:</strong> 이용자 피드백과 지표를 통해 효과를 확인합니다.</li>
+        <li><strong>4단계 — 확산:</strong> 검증된 개선안을 전체 서비스로 확대합니다.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="contact-title">
+      <h2 id="contact-title">의견 보내기</h2>
+      <p>
+        지식광장 개선에 대한 제안이나 의견이 있으시면 언제든지 운영팀으로 알려 주세요.
+        여러분의 참여가 더 나은 지식 공유 공간을 만듭니다.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 지식광장 운영팀. 함께 만드는 지식 공유 공간.</p>
+  </footer>
 </body>
 </html>
