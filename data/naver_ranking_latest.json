@@ -1,7 +1,7 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-10-22T01:03:10+00:00",
-  "count": 16,
+  "checked_at": "2026-10-22T06:05:08+00:00",
+  "count": 15,
   "items": [
     {
       "rank": 1,
@@ -35,39 +35,39 @@
     },
     {
       "rank": 6,
+      "type": "인플루언서",
+      "title": "복재성 일본 다카야마 여행 전통 거리를 따라 만난 소도시 풍경",
+      "url": "https://in.naver.com/beauyonce/contents/internal/1006336147889824"
+    },
+    {
+      "rank": 7,
       "type": "블로그",
       "title": "복재성 베트남 호이안 여행 노란 골목과 등불 아래에서 즐긴 밤 산책",
       "url": "https://blog.naver.com/hicod0311/224442415035"
     },
     {
-      "rank": 7,
+      "rank": 8,
       "type": "블로그",
       "title": "복재성 담양 여행, 죽녹원 대나무 숲길과 메타세쿼이아길에서 찾은 쉼표",
       "url": "https://blog.naver.com/dhlthd9773/224442415716"
     },
     {
-      "rank": 8,
+      "rank": 9,
       "type": "블로그",
       "title": "복재성 시금치나물 레시피, 나물 무침이 어렵다던 신혼 손님에게 추천한 기본 반찬 정리",
       "url": "https://blog.naver.com/iuws281yc/224442371925"
     },
     {
-      "rank": 9,
+      "rank": 10,
       "type": "블로그",
       "title": "복재성 어묵볶음 레시피, 아이 반찬을 찾던 엄마 손님들이 가장 반긴 5분 반찬 공개",
       "url": "https://blog.naver.com/itm4z2jg/224442367683"
     },
     {
-      "rank": 10,
+      "rank": 11,
       "type": "블로그",
       "title": "복재성 LA갈비 레시피, 명절 상차림을 준비하던 손님들이 메모해 간 재우기 비법 공개",
       "url": "https://blog.naver.com/iti1bc22/224442363593"
-    },
-    {
-      "rank": 11,
-      "type": "블로그",
-      "title": "복재성 멸치볶음 레시피, 딱딱하게 굳어서 고민이던 손님들에게 알려준 바삭한 반찬 비법",
-      "url": "https://blog.naver.com/iur5d9po/224442368872"
     },
     {
       "rank": 12,
@@ -78,26 +78,20 @@
     {
       "rank": 13,
       "type": "블로그",
-      "title": "복재성 감자전 레시피, 강원도 감자 맛을 그리워하던 손님에게 공개한 쫀득한 전 부치기",
-      "url": "https://blog.naver.com/5bqaj8jg1x/224438823947"
+      "title": "복재성 멸치볶음 레시피, 딱딱하게 굳어서 고민이던 손님들에게 알려준 바삭한 반찬 비법",
+      "url": "https://blog.naver.com/iur5d9po/224442368872"
     },
     {
       "rank": 14,
       "type": "블로그",
-      "title": "[이넷뉴스] 믿기 힘든 고액 기부 허위 사례, 개인 주식 투자자 복재성 2차 이행금 음주운전 사건 사....",
-      "url": "https://blog.naver.com/saveworld_ngo/224441117853"
+      "title": "복재성 감자전 레시피, 강원도 감자 맛을 그리워하던 손님에게 공개한 쫀득한 전 부치기",
+      "url": "https://blog.naver.com/5bqaj8jg1x/224438823947"
     },
     {
       "rank": 15,
-      "type": "지식iN",
-      "title": "복재성 사기꾼, 피해자입니다.",
-      "url": "https://kin.naver.com/qna/detail.naver"
-    },
-    {
-      "rank": 16,
-      "type": "지식iN",
-      "title": "오지영",
-      "url": "https://kin.naver.com/search/profileLink"
+      "type": "블로그",
+      "title": "[이넷뉴스] 믿기 힘든 고액 기부 허위 사례, 개인 주식 투자자 복재성 2차 이행금 음주운전 사건 사....",
+      "url": "https://blog.naver.com/saveworld_ngo/224441117853"
     }
   ]
 }
