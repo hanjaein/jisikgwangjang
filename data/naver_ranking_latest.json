@@ -1,7 +1,7 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-10-26T06:52:44+00:00",
-  "count": 7,
+  "checked_at": "2026-10-26T13:56:36+00:00",
+  "count": 10,
   "items": [
     {
       "rank": 1,
@@ -17,30 +17,48 @@
     },
     {
       "rank": 3,
+      "type": "블로그",
+      "title": "SWEET DELIGHT ~a.k.a. 스윗딜~",
+      "url": "https://blog.naver.com/sw01020341"
+    },
+    {
+      "rank": 4,
+      "type": "블로그",
+      "title": "복재성 원칙으로 짚어보는 방산 관련주",
+      "url": "https://blog.naver.com/sw01020341/224454186943"
+    },
+    {
+      "rank": 5,
       "type": "카페",
       "title": "복재성 조선 업종을 바라보는 방식",
       "url": "https://cafe.naver.com/move79/6096819"
     },
     {
-      "rank": 4,
+      "rank": 6,
+      "type": "블로그",
+      "title": "복재성 이라면 서울 아파트 매수 전에 어떤 조건을 따져볼까",
+      "url": "https://blog.naver.com/gyl3uszg/224451207717"
+    },
+    {
+      "rank": 7,
       "type": "블로그",
       "title": "복재성 순천 낙안읍성 여행 초가집 골목에서 느낀 옛 마을의 정취",
       "url": "https://blog.naver.com/hicod0311/224442286858"
     },
     {
-      "rank": 5,
-      "type": "블로그",
-      "title": "복재성 은 지금 저평가 종목을 어떤 기준으로 찾았을까",
-      "url": "https://blog.naver.com/saker000/224429561476"
-    },
-    {
-      "rank": 6,
+      "rank": 8,
       "type": "블로그",
       "title": "복재성 영월 청령포 여행 강과 숲이 감싸는 고요한 역사 여행",
       "url": "https://blog.naver.com/ezroc4beat/224429640704"
     },
     {
-      "rank": 7,
+      "rank": 9,
+      "type": "블로그",
+      "title": "복재성 은 지금 저평가 종목을 어떤 기준으로 찾았을까",
+      "url": "https://blog.naver.com/saker000/224429561476"
+    },
+    {
+      "rank": 10,
       "type": "블로그",
       "title": "[이넷뉴스] 믿기 힘든 고액 기부 사례, 개인 주식 투자자 복재성 2차 이행금 음주운전 처벌강화 기....",
       "url": "https://blog.naver.com/saveworld_ngo/224441117853"
