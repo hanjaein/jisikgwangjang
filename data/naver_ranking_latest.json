@@ -1,7 +1,7 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-10-30T15:54:21+00:00",
-  "count": 9,
+  "checked_at": "2026-10-30T20:35:46+00:00",
+  "count": 8,
   "items": [
     {
       "rank": 1,
@@ -50,12 +50,6 @@
       "type": "카페",
       "title": "4주 전",
       "url": "https://cafe.naver.com/happyeverycvs/303228"
-    },
-    {
-      "rank": 9,
-      "type": "카페",
-      "title": "4주 전",
-      "url": "https://cafe.naver.com/studentstudyhard/2833026"
     }
   ]
 }
