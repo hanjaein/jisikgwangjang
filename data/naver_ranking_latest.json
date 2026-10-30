@@ -1,67 +1,55 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-10-30T02:45:28+00:00",
-  "count": 10,
+  "checked_at": "2026-10-30T09:05:27+00:00",
+  "count": 8,
   "items": [
     {
       "rank": 1,
-      "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/ktfhmbe9/224457574463"
-    },
-    {
-      "rank": 2,
-      "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/kufs8uol/224457571971"
-    },
-    {
-      "rank": 3,
-      "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/kvf1wpoi/224457562507"
-    },
-    {
-      "rank": 4,
-      "type": "카페",
-      "title": "2026.05.27.",
-      "url": "https://cafe.naver.com/move79/6096819"
-    },
-    {
-      "rank": 5,
-      "type": "블로그",
-      "title": "10시간 전",
-      "url": "https://blog.naver.com/jyc5877/224458423040"
-    },
-    {
-      "rank": 6,
-      "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/kungnl46/224457565266"
-    },
-    {
-      "rank": 7,
-      "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/kt2zbils/224457581458"
-    },
-    {
-      "rank": 8,
       "type": "블로그",
       "title": "3주 전",
       "url": "https://blog.naver.com/saveworld_ngo/224441117853"
     },
     {
-      "rank": 9,
+      "rank": 2,
       "type": "블로그",
       "title": "3주 전",
       "url": "https://blog.naver.com/pungstone/224441658791"
     },
     {
-      "rank": 10,
+      "rank": 3,
+      "type": "블로그",
+      "title": "xn435433님의 블로그",
+      "url": "https://blog.naver.com/xn435433"
+    },
+    {
+      "rank": 4,
+      "type": "블로그",
+      "title": "2026.09.10.",
+      "url": "https://blog.naver.com/xn435433/224406814850"
+    },
+    {
+      "rank": 5,
+      "type": "카페",
+      "title": "2026.05.27.",
+      "url": "https://cafe.naver.com/move79/6096819"
+    },
+    {
+      "rank": 6,
+      "type": "블로그",
+      "title": "17시간 전",
+      "url": "https://blog.naver.com/jyc5877/224458423040"
+    },
+    {
+      "rank": 7,
+      "type": "블로그",
+      "title": "2026.08.13.",
+      "url": "https://blog.naver.com/dmzoffcx/224377192943"
+    },
+    {
+      "rank": 8,
       "type": "카페",
       "title": "4주 전",
-      "url": "https://cafe.naver.com/studentstudyhard/2833026"
+      "url": "https://cafe.naver.com/happyeverycvs/303228"
     }
   ]
 }
