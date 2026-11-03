@@ -1,40 +1,76 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-11-03T03:44:19+00:00",
-  "count": 6,
+  "checked_at": "2026-11-03T11:25:11+00:00",
+  "count": 12,
   "items": [
     {
       "rank": 1,
       "type": "블로그",
-      "title": "1시간 전",
-      "url": "https://blog.naver.com/71zs3tik/224463263212"
+      "title": "5시간 전",
+      "url": "https://blog.naver.com/700cqcii/224463288667"
     },
     {
       "rank": 2,
       "type": "블로그",
-      "title": "1시간 전",
-      "url": "https://blog.naver.com/72iqs52y/224463259552"
+      "title": "5시간 전",
+      "url": "https://blog.naver.com/71bhtovp/224463280085"
     },
     {
       "rank": 3,
       "type": "블로그",
-      "title": "57분 전",
-      "url": "https://blog.naver.com/6y25qweo/224463297504"
+      "title": "6시간 전",
+      "url": "https://blog.naver.com/71k1wdlg/224463274301"
     },
     {
       "rank": 4,
       "type": "블로그",
-      "title": "14분 전",
-      "url": "https://blog.naver.com/71sxe6p0/224463270323"
+      "title": "6시간 전",
+      "url": "https://blog.naver.com/6xo4bg8s/224463301114"
     },
     {
       "rank": 5,
+      "type": "블로그",
+      "title": "5시간 전",
+      "url": "https://blog.naver.com/718jxxf6r/224463283646"
+    },
+    {
+      "rank": 6,
+      "type": "블로그",
+      "title": "7시간 전",
+      "url": "https://blog.naver.com/71sxe6p0/224463270323"
+    },
+    {
+      "rank": 7,
+      "type": "블로그",
+      "title": "6시간 전",
+      "url": "https://blog.naver.com/6yka2vj8r/224463292574"
+    },
+    {
+      "rank": 8,
+      "type": "블로그",
+      "title": "9시간 전",
+      "url": "https://blog.naver.com/71zs3tik/224463263212"
+    },
+    {
+      "rank": 9,
+      "type": "블로그",
+      "title": "8시간 전",
+      "url": "https://blog.naver.com/6y25qweo/224463297504"
+    },
+    {
+      "rank": 10,
+      "type": "블로그",
+      "title": "9시간 전",
+      "url": "https://blog.naver.com/72iqs52y/224463259552"
+    },
+    {
+      "rank": 11,
       "type": "블로그",
       "title": "1일 전",
       "url": "https://blog.naver.com/dy174ul0/224462071311"
     },
     {
-      "rank": 6,
+      "rank": 12,
       "type": "카페",
       "title": "1일 전",
       "url": "https://cafe.naver.com/hrsj/408382"
