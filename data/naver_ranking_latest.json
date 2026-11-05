@@ -1,73 +1,91 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-11-04T23:58:11+00:00",
-  "count": 11,
+  "checked_at": "2026-11-05T06:29:55+00:00",
+  "count": 14,
   "items": [
     {
       "rank": 1,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6oytfl2w/224464503659"
+      "title": "1시간 전",
+      "url": "https://blog.naver.com/6ig2ir5hj8m/224465777514"
     },
     {
       "rank": 2,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6qgt45ki/224464480155"
+      "title": "3시간 전",
+      "url": "https://blog.naver.com/6ln1x71n/224465745074"
     },
     {
       "rank": 3,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6pzv313z/224464483955"
+      "title": "2시간 전",
+      "url": "https://blog.naver.com/6kl78xt8/224465759088"
     },
     {
       "rank": 4,
-      "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6pugzvwq/224464494024"
+      "type": "카페",
+      "title": "2026.05.27.",
+      "url": "https://cafe.naver.com/move79/6096819"
     },
     {
       "rank": 5,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6pe4aqu1/224464499092"
+      "title": "3시간 전",
+      "url": "https://blog.naver.com/6l191na9/224465755487"
     },
     {
       "rank": 6,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6ohfr88n/224464515464"
+      "title": "2시간 전",
+      "url": "https://blog.naver.com/6k78on46/224465763963"
     },
     {
       "rank": 7,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6op1yh3r/224464509901"
+      "title": "1시간 전",
+      "url": "https://blog.naver.com/6iqwg98h/224465773539"
     },
     {
       "rank": 8,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6pwdp04a/224464490001"
+      "title": "1시간 전",
+      "url": "https://blog.naver.com/6hrxfd4j/224465782350"
     },
     {
       "rank": 9,
       "type": "블로그",
-      "title": "3일 전",
-      "url": "https://blog.naver.com/dy174ul0/224462071311"
+      "title": "2시간 전",
+      "url": "https://blog.naver.com/6jc2syrg/224465768240"
     },
     {
       "rank": 10,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/6qxe3boy/224464471498"
+      "title": "3시간 전",
+      "url": "https://blog.naver.com/6l9qzi7v/224465749761"
     },
     {
       "rank": 11,
       "type": "블로그",
       "title": "1일 전",
-      "url": "https://blog.naver.com/6qib4l1i/224464475220"
+      "url": "https://blog.naver.com/6pe4aqu1/224464499092"
+    },
+    {
+      "rank": 12,
+      "type": "블로그",
+      "title": "4주 전",
+      "url": "https://blog.naver.com/saveworld_ngo/224441117853"
+    },
+    {
+      "rank": 13,
+      "type": "블로그",
+      "title": "6일 전",
+      "url": "https://blog.naver.com/jyc5877/224458423040"
+    },
+    {
+      "rank": 14,
+      "type": "블로그",
+      "title": "4주 전",
+      "url": "https://blog.naver.com/pungstone/224441658791"
     }
   ]
 }
