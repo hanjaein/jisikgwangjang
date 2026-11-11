@@ -1,7 +1,7 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-11-10T23:54:45+00:00",
-  "count": 5,
+  "checked_at": "2026-11-11T05:38:54+00:00",
+  "count": 6,
   "items": [
     {
       "rank": 1,
@@ -18,20 +18,26 @@
     {
       "rank": 3,
       "type": "블로그",
-      "title": "8시간 전",
+      "title": "14시간 전",
       "url": "https://blog.naver.com/happykoreaon/224472300284"
     },
     {
       "rank": 4,
       "type": "블로그",
-      "title": "2일 전",
-      "url": "https://blog.naver.com/04s2193hs/224470091178"
+      "title": "3일 전",
+      "url": "https://blog.naver.com/0fedjbwjr4h/224467212359"
     },
     {
       "rank": 5,
       "type": "블로그",
       "title": "2일 전",
-      "url": "https://blog.naver.com/6vtbrtx8/224470109260"
+      "url": "https://blog.naver.com/6vnckfzx/224470113872"
+    },
+    {
+      "rank": 6,
+      "type": "블로그",
+      "title": "1시간 전",
+      "url": "https://blog.naver.com/bcpp21/224472847605"
     }
   ]
 }
