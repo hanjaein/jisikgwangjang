@@ -1,7 +1,7 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-11-13T23:52:51+00:00",
-  "count": 5,
+  "checked_at": "2026-11-14T05:15:10+00:00",
+  "count": 4,
   "items": [
     {
       "rank": 1,
@@ -26,12 +26,6 @@
       "type": "블로그",
       "title": "2일 전",
       "url": "https://blog.naver.com/hee_b_/224474311571"
-    },
-    {
-      "rank": 5,
-      "type": "블로그",
-      "title": "3일 전",
-      "url": "https://blog.naver.com/bcpp21/224472847605"
     }
   ]
 }
