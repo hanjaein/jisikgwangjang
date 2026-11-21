@@ -1,7 +1,7 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-11-21T02:40:00+00:00",
-  "count": 15,
+  "checked_at": "2026-11-21T10:16:00+00:00",
+  "count": 16,
   "items": [
     {
       "rank": 1,
@@ -18,26 +18,26 @@
     {
       "rank": 3,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/hinfomax_/224484927452"
+      "title": "2시간 전",
+      "url": "https://blog.naver.com/hinfomax_/224486085595"
     },
     {
       "rank": 4,
       "type": "블로그",
-      "title": "1일 전",
-      "url": "https://blog.naver.com/choice-815/224484246182"
+      "title": "49분 전",
+      "url": "https://blog.naver.com/happykoreaon/224486193518"
     },
     {
       "rank": 5,
       "type": "블로그",
-      "title": "2일 전",
-      "url": "https://blog.naver.com/happykoreaon/224483712501"
+      "title": "24분 전",
+      "url": "https://blog.naver.com/tkdgns2166/224486213300"
     },
     {
       "rank": 6,
       "type": "블로그",
-      "title": "3일 전",
-      "url": "https://blog.naver.com/speednews821/224482306034"
+      "title": "2시간 전",
+      "url": "https://blog.naver.com/speednews821/224486096946"
     },
     {
       "rank": 7,
@@ -66,29 +66,35 @@
     {
       "rank": 11,
       "type": "블로그",
-      "title": "3주 전",
-      "url": "https://blog.naver.com/0olbg39n/224466215039"
+      "title": "2주 전",
+      "url": "https://blog.naver.com/chnam71/224467986954"
     },
     {
       "rank": 12,
       "type": "블로그",
       "title": "3주 전",
-      "url": "https://blog.naver.com/0kvsgsgy/224466224363"
+      "url": "https://blog.naver.com/0olbg39n/224466215039"
     },
     {
       "rank": 13,
+      "type": "블로그",
+      "title": "3주 전",
+      "url": "https://blog.naver.com/0kvsgsgy/224466224363"
+    },
+    {
+      "rank": 14,
       "type": "블로그",
       "title": "2주 전",
       "url": "https://blog.naver.com/hee_b_/224474311571"
     },
     {
-      "rank": 14,
+      "rank": 15,
       "type": "블로그",
       "title": "3주 전",
       "url": "https://blog.naver.com/cyndi99/224466560604"
     },
     {
-      "rank": 15,
+      "rank": 16,
       "type": "카페",
       "title": "2026.09.21.",
       "url": "https://cafe.naver.com/jinhaemam/2410266"
