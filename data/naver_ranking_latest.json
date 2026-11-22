@@ -1,7 +1,7 @@
 {
   "keyword": "복재성",
-  "checked_at": "2026-11-22T17:56:10+00:00",
-  "count": 16,
+  "checked_at": "2026-11-22T23:31:23+00:00",
+  "count": 15,
   "items": [
     {
       "rank": 1,
@@ -17,39 +17,39 @@
     },
     {
       "rank": 3,
-      "type": "뉴스",
-      "title": "네이버뉴스",
-      "url": "https://n.news.naver.com/mnews/article/029/0003057414"
-    },
-    {
-      "rank": 4,
       "type": "블로그",
       "title": "2일 전",
       "url": "https://blog.naver.com/hinfomax_/224486085595"
     },
     {
+      "rank": 4,
+      "type": "블로그",
+      "title": "8시간 전",
+      "url": "https://blog.naver.com/happykoreaon/224487619521"
+    },
+    {
       "rank": 5,
       "type": "블로그",
-      "title": "1시간 전",
+      "title": "7시간 전",
       "url": "https://blog.naver.com/choice-815/224487651492"
     },
     {
       "rank": 6,
       "type": "블로그",
-      "title": "2시간 전",
-      "url": "https://blog.naver.com/happykoreaon/224487619521"
+      "title": "5시간 전",
+      "url": "https://blog.naver.com/tkdgns2166/224487718992"
     },
     {
       "rank": 7,
-      "type": "블로그",
-      "title": "3주 전",
-      "url": "https://blog.naver.com/0l4erbvz/224466220866"
-    },
-    {
-      "rank": 8,
       "type": "카페",
       "title": "2026.05.27.",
       "url": "https://cafe.naver.com/move79/6096819"
+    },
+    {
+      "rank": 8,
+      "type": "블로그",
+      "title": "3주 전",
+      "url": "https://blog.naver.com/0l4erbvz/224466220866"
     },
     {
       "rank": 9,
@@ -89,12 +89,6 @@
     },
     {
       "rank": 15,
-      "type": "블로그",
-      "title": "4주 전",
-      "url": "https://blog.naver.com/jyc5877/224458423040"
-    },
-    {
-      "rank": 16,
       "type": "카페",
       "title": "2026.09.21.",
       "url": "https://cafe.naver.com/jinhaemam/2410266"
